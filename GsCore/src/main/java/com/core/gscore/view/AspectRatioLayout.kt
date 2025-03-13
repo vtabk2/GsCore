@@ -1,9 +1,10 @@
-package com.core.gscore.utils.view
+package com.core.gscore.view
 
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.core.gscore.R
+import androidx.core.content.withStyledAttributes
 
 class AspectRatioLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
 
@@ -21,10 +22,10 @@ class AspectRatioLayout @JvmOverloads constructor(context: Context, attrs: Attri
 
     init {
         attrs?.let {
-            val a = context.obtainStyledAttributes(attrs, R.styleable.AspectRatioLayout)
-            widthToHeight = a.getFloat(R.styleable.AspectRatioLayout_widthToHeight, widthToHeight)
-            heightToWidth = a.getFloat(R.styleable.AspectRatioLayout_heightToWidth, heightToWidth)
-            a.recycle()
+            context.withStyledAttributes(attrs, R.styleable.AspectRatioLayout) {
+                widthToHeight = getFloat(R.styleable.AspectRatioLayout_widthToHeight, widthToHeight)
+                heightToWidth = getFloat(R.styleable.AspectRatioLayout_heightToWidth, heightToWidth)
+            }
         }
     }
 
