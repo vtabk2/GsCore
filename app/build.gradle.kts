@@ -35,4 +35,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
     implementation(libs.androidx.constraintlayout)
+
+    implementation(project(":GsCore"))
 }
