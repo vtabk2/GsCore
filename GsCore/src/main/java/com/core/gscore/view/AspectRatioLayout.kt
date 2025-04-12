@@ -3,47 +3,61 @@ package com.core.gscore.view
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
-import com.core.gscore.R
 import androidx.core.content.withStyledAttributes
+import com.core.gscore.R
 
-class AspectRatioLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) : FrameLayout(context, attrs, defStyleAttr) {
+class AspectRatioLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyleAttr: Int = 0
+) : FrameLayout(context, attrs, defStyleAttr) {
 
-    var widthToHeight: Float = -1f
+    companion object {
+        private const val DEFAULT_RATIO = -1f
+    }
+
+    var widthToHeight: Float = DEFAULT_RATIO
         set(value) {
-            field = value
-            invalidate()
+            if (field != value) {
+                field = value
+                if (value != DEFAULT_RATIO) heightToWidth = DEFAULT_RATIO
+                requestLayout()
+            }
         }
 
-    var heightToWidth: Float = -1f
+    var heightToWidth: Float = DEFAULT_RATIO
         set(value) {
-            field = value
-            invalidate()
+            if (field != value) {
+                field = value
+                if (value != DEFAULT_RATIO) widthToHeight = DEFAULT_RATIO
+                requestLayout()
+            }
         }
 
     init {
         attrs?.let {
             context.withStyledAttributes(attrs, R.styleable.AspectRatioLayout) {
-                widthToHeight = getFloat(R.styleable.AspectRatioLayout_widthToHeight, widthToHeight)
-                heightToWidth = getFloat(R.styleable.AspectRatioLayout_heightToWidth, heightToWidth)
+                widthToHeight = getFloat(R.styleable.AspectRatioLayout_widthToHeight, DEFAULT_RATIO)
+                heightToWidth = getFloat(R.styleable.AspectRatioLayout_heightToWidth, DEFAULT_RATIO)
             }
         }
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val desiredWidth: Int
-        val desiredHeight: Int
-        if (widthToHeight != -1f) {
-            desiredHeight = MeasureSpec.getSize(heightMeasureSpec)
-            desiredWidth = (desiredHeight * widthToHeight).toInt()
-        } else if (heightToWidth != -1f) {
-            desiredWidth = MeasureSpec.getSize(widthMeasureSpec)
-            desiredHeight = (desiredWidth * heightToWidth).toInt()
-        } else {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-            return
+        when {
+            widthToHeight != DEFAULT_RATIO -> {
+                val desiredHeight = MeasureSpec.getSize(heightMeasureSpec)
+                val desiredWidth = (desiredHeight * widthToHeight).toInt()
+                setMeasuredDimension(desiredWidth, desiredHeight)
+            }
+
+            heightToWidth != DEFAULT_RATIO -> {
+                val desiredWidth = MeasureSpec.getSize(widthMeasureSpec)
+                val desiredHeight = (desiredWidth * heightToWidth).toInt()
+                setMeasuredDimension(desiredWidth, desiredHeight)
+            }
+
+            else -> super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         }
-        val desiredWidthMeasureSpec = MeasureSpec.makeMeasureSpec(desiredWidth, MeasureSpec.EXACTLY)
-        val desiredHeightMeasureSpec = MeasureSpec.makeMeasureSpec(desiredHeight, MeasureSpec.EXACTLY)
-        super.onMeasure(desiredWidthMeasureSpec, desiredHeightMeasureSpec)
     }
 }

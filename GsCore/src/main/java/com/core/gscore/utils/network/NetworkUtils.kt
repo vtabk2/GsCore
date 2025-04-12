@@ -160,9 +160,8 @@ object NetworkUtils {
         var currentDelay = initialDelay
         var lastError: NetworkError = NetworkError.TIMEOUT
 
-        repeat(maxRetries) { attempt ->
-            val result = hasInternetAccess(context, timeout)
-            when (result) {
+        repeat(maxRetries) {
+            when (val result = hasInternetAccess(context, timeout)) {
                 NetworkError.SUCCESS -> return result
                 NetworkError.TURN_OFF -> return result // Không retry khi mạng tắt
                 else -> {

@@ -8,32 +8,25 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import androidx.lifecycle.LiveData
+import java.net.InetAddress
 import java.net.UnknownHostException
-import kotlin.collections.all
 
 class LiveDataNetworkStatus(context: Context) : LiveData<Boolean>() {
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    private val networks: MutableList<Network> = mutableListOf()
+    private val activeNetworks = mutableSetOf<Network>()
+    private var lastKnownState: Boolean = false
 
-    private val networkStateObject = object : ConnectivityManager.NetworkCallback() {
+    private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onLost(network: Network) {
             super.onLost(network)
-            networks.remove(network)
-            postValue(!networks.all { !checkInternetConnectivity(it) })
+            activeNetworks.remove(network)
+            updateNetworkStatus()
         }
 
         override fun onAvailable(network: Network) {
             super.onAvailable(network)
-            networks.add(network)
-            postValue(checkInternetConnectivity(network))
-        }
-
-        fun checkInternetConnectivity(network: Network): Boolean {
-            return try {
-                network.getByName(ROOT_SERVER_CHECK_URL) != null
-            } catch (e: UnknownHostException) {
-                false
-            }
+            activeNetworks.add(network)
+            checkInternetConnectivityAsync(network)
         }
     }
 
@@ -41,39 +34,71 @@ class LiveDataNetworkStatus(context: Context) : LiveData<Boolean>() {
     override fun onActive() {
         super.onActive()
         try {
-            connectivityManager.registerNetworkCallback(networkRequestBuilder(), networkStateObject)
-            postValue(isNetworkEnabled()) // Consider all networks "unavailable" on start
+            connectivityManager.registerNetworkCallback(buildNetworkRequest(), networkCallback)
+            updateInitialNetworkStatus()
         } catch (e: Exception) {
-            e.printStackTrace()
+            postValue(false)
         }
     }
 
     override fun onInactive() {
         super.onInactive()
         try {
-            connectivityManager.unregisterNetworkCallback(networkStateObject)
+            connectivityManager.unregisterNetworkCallback(networkCallback)
         } catch (e: Exception) {
-            e.printStackTrace()
+            // Ignore unregistration errors
         }
     }
 
-    private fun isNetworkEnabled(): Boolean {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val activeNetwork = connectivityManager.activeNetwork ?: return false
-            val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return false
-            return networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) || networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+    private fun updateInitialNetworkStatus() {
+        val isConnected = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val activeNetwork = connectivityManager.activeNetwork ?: return postValue(false)
+            val capabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
+            capabilities?.hasInternetCapability() == true
         } else {
-            // For API level below 23, use deprecated methods
-            val activeNetworkInfo = connectivityManager.activeNetworkInfo
-            return activeNetworkInfo != null && (activeNetworkInfo.type == ConnectivityManager.TYPE_WIFI || activeNetworkInfo.type == ConnectivityManager.TYPE_MOBILE)
+            @Suppress("DEPRECATION")
+            connectivityManager.activeNetworkInfo?.isConnected == true
+        }
+        postValue(isConnected)
+    }
+
+    private fun checkInternetConnectivityAsync(network: Network) {
+        Thread {
+            val isConnected = try {
+                InetAddress.getByName(ROOT_SERVER_CHECK_URL) != null
+            } catch (e: UnknownHostException) {
+                false
+            }
+
+            if (isConnected != lastKnownState) {
+                lastKnownState = isConnected
+                postValue(isConnected)
+            }
+        }.start()
+    }
+
+    private fun updateNetworkStatus() {
+        if (activeNetworks.isEmpty()) {
+            postValue(false)
+            lastKnownState = false
         }
     }
 
-    private fun networkRequestBuilder(): NetworkRequest {
-        return NetworkRequest.Builder().addTransportType(NetworkCapabilities.TRANSPORT_WIFI).addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR).build()
+    private fun buildNetworkRequest(): NetworkRequest {
+        return NetworkRequest.Builder()
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+    }
+
+    private fun NetworkCapabilities.hasInternetCapability(): Boolean {
+        return hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
+                (hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+                        hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR))
     }
 
     companion object {
-        const val ROOT_SERVER_CHECK_URL = "a.root-servers.net"
+        private const val ROOT_SERVER_CHECK_URL = "a.root-servers.net"
     }
 }
