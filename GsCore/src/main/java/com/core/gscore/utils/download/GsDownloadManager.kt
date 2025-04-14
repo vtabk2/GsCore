@@ -1,0 +1,146 @@
+package com.core.gscore.utils.download
+
+import android.annotation.SuppressLint
+import android.content.Context
+import com.core.gscore.hourglass.Hourglass
+import com.core.gscore.utils.network.NetworkUtils
+import com.downloader.Error
+import com.downloader.OnDownloadListener
+import com.downloader.PRDownloader
+import com.downloader.PRDownloaderConfig
+import javax.net.ssl.SSLHandshakeException
+
+class GsDownloadManager() {
+
+    fun register(
+        context: Context,
+        config: PRDownloaderConfig = PRDownloaderConfig.newBuilder().build()
+    ) {
+        PRDownloader.initialize(context, config)
+    }
+
+    fun download(
+        context: Context,
+        url: String,
+        dirPath: String,
+        fileName: String,
+        callbackProgress: ((progress: Float) -> Unit)? = null,
+        callbackDownload: ((path: String, downloadResult: DownloadResult) -> Unit)? = null,
+        timeout: Long = TIMEOUT_DOWNLOADING,
+        maxRetries: Int = 3,
+        enableDebounce: Boolean = false,
+    ) {
+        NetworkUtils.hasInternetAccessCheck(
+            doTask = {
+                download(
+                    url = url,
+                    dirPath = dirPath,
+                    fileName = fileName,
+                    callbackProgress = callbackProgress,
+                    callbackDownload = callbackDownload,
+                    timeout = timeout
+                )
+            },
+            doException = { networkError ->
+                callbackDownload?.invoke("$dirPath/$fileName", if (networkError == NetworkUtils.NetworkError.SSL_HANDSHAKE) DownloadResult.SSL_HANDSHAKE else DownloadResult.TIMEOUT)
+            },
+            context = context,
+            maxRetries = maxRetries,
+            enableDebounce = enableDebounce
+        )
+    }
+
+    private fun download(
+        url: String,
+        dirPath: String,
+        fileName: String,
+        callbackProgress: ((progress: Float) -> Unit)? = null,
+        callbackDownload: ((path: String, downloadResult: DownloadResult) -> Unit)? = null,
+        timeout: Long = TIMEOUT_DOWNLOADING
+    ): Int {
+        // trả ra progress = 0
+        callbackProgress?.invoke(0f)
+        //
+        val path = "$dirPath/$fileName"
+        val timeoutDownloading = TIMEOUT_DOWNLOADING_MIN.coerceAtLeast(timeout)
+        var isStartDownload = false
+        var downloadId = 0
+
+        // tạo thời gian kiểm tra timeout
+        val timeoutDownloadingHourglass = object : Hourglass(timeoutDownloading, 1000) {
+            override fun onTimerTick(timeRemaining: Long) {
+                // Do nothing
+            }
+
+            override fun onTimerFinish() {
+                if (isStartDownload) {
+                    return
+                }
+                cancel(downloadId)
+            }
+        }
+        timeoutDownloadingHourglass.startTimer()
+
+        // bắt đầu tải
+        downloadId = PRDownloader
+            .download(url, dirPath, fileName)
+            .build()
+            .setOnStartOrResumeListener {
+                isStartDownload = true
+                // hủy đếm thời gian đi
+                timeoutDownloadingHourglass.stopTimer()
+            }
+            .setOnCancelListener {
+                callbackDownload?.invoke(path, DownloadResult.CANCEL)
+            }
+            .setOnProgressListener { progress ->
+                callbackProgress?.invoke(progress.currentBytes * 100 / progress.totalBytes.toFloat())
+            }
+            .start(object : OnDownloadListener {
+                override fun onDownloadComplete() {
+                    callbackDownload?.invoke(path, DownloadResult.SUCCESS)
+                }
+
+                override fun onError(error: Error?) {
+                    callbackDownload?.invoke(path, if (error?.connectionException is SSLHandshakeException) DownloadResult.SSL_HANDSHAKE else DownloadResult.TIMEOUT)
+                }
+            })
+        return downloadId
+    }
+
+    fun cancel(downloadId: Int) {
+        PRDownloader.cancel(downloadId)
+    }
+
+    fun cancelAll() {
+        PRDownloader.cancelAll()
+    }
+
+    enum class DownloadResult {
+        SUCCESS,
+        TIMEOUT,
+        CANCEL,
+        SSL_HANDSHAKE
+    }
+
+    companion object {
+        @SuppressLint("StaticFieldLeak")
+        private var singleton: GsDownloadManager? = null
+
+        const val TIMEOUT_DOWNLOADING = 30_000L
+        const val TIMEOUT_DOWNLOADING_MIN = 15_000L
+
+        /***
+         * returns an instance of this class. if singleton is null create an instance
+         * else return  the current instance
+         * @return
+         */
+        val instance: GsDownloadManager
+            get() {
+                if (singleton == null) {
+                    singleton = GsDownloadManager()
+                }
+                return singleton as GsDownloadManager
+            }
+    }
+}

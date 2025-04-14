@@ -41,8 +41,8 @@ object NetworkUtils {
     private const val RETRY_MAX_DELAY_MS = 2000L
 
     // Quản lý Coroutine và Semaphore
-    private val netCheckScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    private val semaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
+    private var netCheckScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private var semaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
     private var lastRequestTime = 0L
 
     @SuppressLint("MissingPermission")
@@ -179,6 +179,10 @@ object NetworkUtils {
     // Hủy tất cả khi không cần thiết (ví dụ: Activity destroy)
     fun cancelAllRequests() {
         netCheckScope.cancel()
+        // Tạo lại scope và semaphore mới
+        netCheckScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+        semaphore = Semaphore(MAX_CONCURRENT_REQUESTS)
+        lastRequestTime = 0L // Reset thời gian debounce
     }
 
     enum class NetworkError {
