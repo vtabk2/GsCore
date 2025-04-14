@@ -32,12 +32,12 @@ Add it in your root build.gradle at the end of repositories:
 ```css
         lifecycleScope.launch(Dispatchers.IO) {
             for (i in 0..100) {
-                Log.d("TAG5", "MainActivity_onCreate: i = $i")
+                Log.d("GsDownloadManager", "MainActivity_onCreate: i = $i")
                 NetworkUtils.hasInternetAccessCheck(
                     doTask = {
-                        Log.d("TAG5", "MainActivity_onCreate: SUCCESS")
+                        Log.d("GsDownloadManager", "MainActivity_onCreate: SUCCESS")
                     }, doException = { networkError ->
-                        Log.d("TAG5", "MainActivity_onCreate: networkError = " + networkError.name)
+                        Log.d("GsDownloadManager", "MainActivity_onCreate: networkError = " + networkError.name)
                     }, context = this@MainActivity, maxRetries = 3
                 )
                 delay(500)
