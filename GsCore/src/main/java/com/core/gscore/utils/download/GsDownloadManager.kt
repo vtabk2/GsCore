@@ -31,7 +31,7 @@ class GsDownloadManager() {
      * @param timeoutConnect thời gian chờ kết nối để tải tính bằng milliseconds
      * @param maxRetries số lần thử lại tối đa khi kiểm tra kết nối mạng
      * @param enableDebounce có kiểm tra chặn kiểm tra mạng liên tục không
-     * @param tag các chú thích kèm theo nếu có
+     * @param tag các chú thích kèm theo của bạn nếu muốn
      */
     fun download(
         context: Context,
@@ -40,12 +40,14 @@ class GsDownloadManager() {
         fileName: String,
         callbackProgress: ((progress: Float) -> Unit)? = null,
         callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
-        timeoutConnect: Long = TIMEOUT_CONNECT_DOWNLOADING,
+        timeoutConnect: Long = TIMEOUT_CONNECT_DOWNLOADING_DEFAULT,
         maxRetries: Int = 3,
         enableDebounce: Boolean = false,
         tag: Any? = null
     ) {
         val path = "$dirPath/$fileName"
+
+        // Khởi tạo trạng thái kết nối
         val downloadResult = DownloadResult(
             path = path,
             downloadStatus = DownloadStatus.CONNECTING,
@@ -91,7 +93,7 @@ class GsDownloadManager() {
         downloadResult: DownloadResult,
         callbackProgress: ((progress: Float) -> Unit)? = null,
         callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
-        timeoutConnect: Long = TIMEOUT_CONNECT_DOWNLOADING
+        timeoutConnect: Long
     ) {
         val timeoutDownloading = TIMEOUT_CONNECT_DOWNLOADING_MIN.coerceAtLeast(timeoutConnect)
         var downloadId = 0
@@ -103,6 +105,7 @@ class GsDownloadManager() {
             }
 
             override fun onTimerFinish() {
+                // Hết thời gian chờ mà vẫn trạng thái đang kết nối thì sẽ hủy tải đi
                 if (downloadResult.downloadStatus == DownloadStatus.CONNECTING) {
                     cancel(downloadId)
                 }
@@ -124,8 +127,14 @@ class GsDownloadManager() {
             .setOnCancelListener {
                 callbackDownload?.invoke(downloadResult.apply {
                     when (downloadResult.downloadStatus) {
-                        DownloadStatus.DOWNLOADING -> downloadStatus = DownloadStatus.CANCEL
+                        /**
+                         * Thường là trường hợp hủy do hết thời gian chờ mà vẫn chưa kết nối được
+                         */
                         DownloadStatus.CONNECTING -> downloadStatus = DownloadStatus.TIMEOUT
+                        /**
+                         * Thường là truờng hợp hủy chủ động khi đã bắt đầu tải rồi
+                         */
+                        DownloadStatus.DOWNLOADING -> downloadStatus = DownloadStatus.CANCEL
                         else -> {
 
                         }
@@ -215,7 +224,7 @@ class GsDownloadManager() {
         @SuppressLint("StaticFieldLeak")
         private var singleton: GsDownloadManager? = null
 
-        const val TIMEOUT_CONNECT_DOWNLOADING = 30_000L
+        const val TIMEOUT_CONNECT_DOWNLOADING_DEFAULT = 30_000L
         const val TIMEOUT_CONNECT_DOWNLOADING_MIN = 15_000L
 
         /***
