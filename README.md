@@ -48,7 +48,7 @@ quản lý download có thời gian chờ
                 callbackProgress = { progress ->
                     progressLiveData.postValue(progress)
                 },
-                callbackDownload = { path, downloadResult: DownloadResult ->
+                callbackDownload = { path, downloadStatus: DownloadStatus ->
                 }
             )
     }

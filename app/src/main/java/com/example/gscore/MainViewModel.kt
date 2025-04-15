@@ -4,12 +4,12 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.core.gscore.utils.download.GsDownloadManager
-import com.core.gscore.utils.download.GsDownloadManager.DownloadResult
+import com.core.gscore.utils.download.GsDownloadManager.DownloadStatus
 import java.io.File
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val progressLiveData = MutableLiveData<Int>()
-    val downloadResultLiveData = MutableLiveData<DownloadResult>()
+    val downloadStatusLiveData = MutableLiveData<DownloadStatus>()
 
     fun download() {
         val context = getApplication<Application>()
@@ -33,8 +33,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             callbackProgress = { progress ->
                 progressLiveData.postValue(progress.toInt())
             },
-            callbackDownload = { path, downloadResult: DownloadResult ->
-                downloadResultLiveData.postValue(downloadResult)
+            callbackDownload = { path, downloadStatus: DownloadStatus ->
+                downloadStatusLiveData.postValue(downloadStatus)
             }
         )
     }

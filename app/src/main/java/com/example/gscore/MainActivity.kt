@@ -54,39 +54,39 @@ class MainActivity : AppCompatActivity() {
         viewModel.progressLiveData.observe(this) { progress ->
             bindingView.tvProgress.text = String.format(Locale.getDefault(), "%d %%", progress)
         }
-        viewModel.downloadResultLiveData.observe(this) { downloadResult ->
-            when (downloadResult) {
-                GsDownloadManager.DownloadResult.CONNECTING -> {
+        viewModel.downloadStatusLiveData.observe(this) { downloadStatus ->
+            when (downloadStatus) {
+                GsDownloadManager.DownloadStatus.CONNECTING -> {
                     bindingView.tvRetry.invisible()
                     bindingView.tvProgress.text = "0%"
                     bindingView.tvResult.text = "CONNECTING"
                 }
 
-                GsDownloadManager.DownloadResult.DOWNLOADING -> {
+                GsDownloadManager.DownloadStatus.DOWNLOADING -> {
                     bindingView.tvRetry.invisible()
                     bindingView.tvProgress.visible()
                     bindingView.tvResult.text = "DOWNLOADING"
                 }
 
-                GsDownloadManager.DownloadResult.SUCCESS -> {
+                GsDownloadManager.DownloadStatus.SUCCESS -> {
                     bindingView.tvRetry.invisible()
                     bindingView.tvProgress.invisible()
                     bindingView.tvResult.text = "SUCCESS"
                 }
 
-                GsDownloadManager.DownloadResult.TIMEOUT -> {
+                GsDownloadManager.DownloadStatus.TIMEOUT -> {
                     bindingView.tvRetry.visible()
                     bindingView.tvProgress.invisible()
                     bindingView.tvResult.text = "TIMEOUT"
                 }
 
-                GsDownloadManager.DownloadResult.CANCEL -> {
+                GsDownloadManager.DownloadStatus.CANCEL -> {
                     bindingView.tvRetry.visible()
                     bindingView.tvProgress.invisible()
                     bindingView.tvResult.text = "CANCEL"
                 }
 
-                GsDownloadManager.DownloadResult.SSL_HANDSHAKE -> {
+                GsDownloadManager.DownloadStatus.SSL_HANDSHAKE -> {
                     bindingView.tvRetry.visible()
                     bindingView.tvProgress.invisible()
                     bindingView.tvResult.text = "SSL_HANDSHAKE"
