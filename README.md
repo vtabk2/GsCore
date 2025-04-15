@@ -22,9 +22,9 @@ Add it in your root build.gradle at the end of repositories:
 # Lịch sử cập nhật
 
 **Version 1.0.5**
-- Thêm [DownloadStatus]() quản lý trạng thái tải
-- Đổi [DownloadResult]() giờ sẽ chứa đường dẫn và trạng thái tải
-- 
+- Thêm [DownloadStatus](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) quản lý trạng thái tải
+- Đổi [DownloadResult](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) giờ sẽ chứa đường dẫn và trạng thái tải
+- Sửa lại [GsDownloadManager](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) để trạng thái tải về chuẩn hơn
 
 ```css
         GsDownloadManager.instance.download(
@@ -78,6 +78,7 @@ quản lý download có thời gian chờ
 
 **Version 1.0.3**
 
+- Thêm [Hourglass](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/hourglass/Hourglass.java)
 - Sửa lại NetworkUtils
 - Thêm check lại ở hàm hasInternetAccessCheck()
 - Thêm maxRetries giới hạn số lần thử lại
