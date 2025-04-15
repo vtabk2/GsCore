@@ -8,7 +8,8 @@ import com.core.gscore.utils.download.GsDownloadManager.DownloadResult
 import java.io.File
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
-    val progressLiveData = MutableLiveData<Float>()
+    val progressLiveData = MutableLiveData<Int>()
+    val downloadResultLiveData = MutableLiveData<DownloadResult>()
 
     fun download() {
         val context = getApplication<Application>()
@@ -30,9 +31,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             dirPath = file.absolutePath,
             fileName = "Photo Frame - Photo Collage_5.3.0_APKPure.xapk",
             callbackProgress = { progress ->
-                progressLiveData.postValue(progress)
+                progressLiveData.postValue(progress.toInt())
             },
             callbackDownload = { path, downloadResult: DownloadResult ->
+                downloadResultLiveData.postValue(downloadResult)
             }
         )
     }

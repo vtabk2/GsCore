@@ -9,6 +9,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.core.gscore.utils.download.GsDownloadManager
+import com.core.gscore.utils.extensions.invisible
+import com.core.gscore.utils.extensions.visible
 import com.core.gscore.utils.network.NetworkUtils
 import com.example.gscore.databinding.ActivityMainBinding
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +52,52 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.download()
         viewModel.progressLiveData.observe(this) { progress ->
-            bindingView.progress.text = String.format(Locale.getDefault(), "%f %%", progress)
+            bindingView.tvProgress.text = String.format(Locale.getDefault(), "%d %%", progress)
+        }
+        viewModel.downloadResultLiveData.observe(this) { downloadResult ->
+            when (downloadResult) {
+                GsDownloadManager.DownloadResult.CONNECTING -> {
+                    bindingView.tvRetry.invisible()
+                    bindingView.tvProgress.text = "0%"
+                    bindingView.tvResult.text = "CONNECTING"
+                }
+
+                GsDownloadManager.DownloadResult.DOWNLOADING -> {
+                    bindingView.tvRetry.invisible()
+                    bindingView.tvProgress.visible()
+                    bindingView.tvResult.text = "DOWNLOADING"
+                }
+
+                GsDownloadManager.DownloadResult.SUCCESS -> {
+                    bindingView.tvRetry.invisible()
+                    bindingView.tvProgress.invisible()
+                    bindingView.tvResult.text = "SUCCESS"
+                }
+
+                GsDownloadManager.DownloadResult.TIMEOUT -> {
+                    bindingView.tvRetry.visible()
+                    bindingView.tvProgress.invisible()
+                    bindingView.tvResult.text = "TIMEOUT"
+                }
+
+                GsDownloadManager.DownloadResult.CANCEL -> {
+                    bindingView.tvRetry.visible()
+                    bindingView.tvProgress.invisible()
+                    bindingView.tvResult.text = "CANCEL"
+                }
+
+                GsDownloadManager.DownloadResult.SSL_HANDSHAKE -> {
+                    bindingView.tvRetry.visible()
+                    bindingView.tvProgress.invisible()
+                    bindingView.tvResult.text = "SSL_HANDSHAKE"
+                }
+            }
+        }
+
+        bindingView.tvRetry.setOnClickListener {
+            bindingView.tvRetry.invisible()
+            bindingView.tvProgress.visible()
+            viewModel.download()
         }
     }
 
