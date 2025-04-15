@@ -35,7 +35,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             },
             callbackDownload = { downloadResult ->
                 downloadStatusLiveData.postValue(downloadResult.downloadStatus)
-            }
+            },
+            timeoutConnect = 15_000
         )
     }
 

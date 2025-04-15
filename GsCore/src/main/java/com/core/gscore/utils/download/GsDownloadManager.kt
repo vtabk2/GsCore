@@ -12,6 +12,9 @@ import javax.net.ssl.SSLHandshakeException
 
 class GsDownloadManager() {
 
+    /**
+     * Đăng ký cấu hình PRDownloader
+     */
     fun register(
         context: Context,
         config: PRDownloaderConfig = PRDownloaderConfig.newBuilder().build()
@@ -19,6 +22,17 @@ class GsDownloadManager() {
         PRDownloader.initialize(context, config)
     }
 
+    /**
+     * @param url địa chỉ tải tệp
+     * @param dirPath thư mục lưu tệp
+     * @param fileName tên của tệp
+     * @param callbackProgress chạy % khi tải
+     * @param callbackDownload trả về trạng thái tải
+     * @param timeoutConnect thời gian chờ kết nối để tải tính bằng milliseconds
+     * @param maxRetries số lần thử lại tối đa khi kiểm tra kết nối mạng
+     * @param enableDebounce có kiểm tra chặn kiểm tra mạng liên tục không
+     * @param tag các chú thích kèm theo nếu có
+     */
     fun download(
         context: Context,
         url: String,
@@ -26,7 +40,7 @@ class GsDownloadManager() {
         fileName: String,
         callbackProgress: ((progress: Float) -> Unit)? = null,
         callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
-        timeout: Long = TIMEOUT_DOWNLOADING,
+        timeoutConnect: Long = TIMEOUT_CONNECT_DOWNLOADING,
         maxRetries: Int = 3,
         enableDebounce: Boolean = false,
         tag: Any? = null
@@ -48,7 +62,7 @@ class GsDownloadManager() {
                     downloadResult = downloadResult,
                     callbackProgress = callbackProgress,
                     callbackDownload = callbackDownload,
-                    timeout = timeout,
+                    timeoutConnect = timeoutConnect,
                 )
             },
             doException = { networkError ->
@@ -61,6 +75,15 @@ class GsDownloadManager() {
         )
     }
 
+    /**
+     * @param url địa chỉ tải tệp
+     * @param dirPath thư mục lưu tệp
+     * @param fileName tên của tệp
+     * @param downloadResult trạng thái tải
+     * @param callbackProgress chạy % khi tải
+     * @param callbackDownload trả về trạng thái tải
+     * @param timeoutConnect thời gian chờ kết nối để tải
+     */
     private fun downloadWithTimeout(
         url: String,
         dirPath: String,
@@ -68,9 +91,9 @@ class GsDownloadManager() {
         downloadResult: DownloadResult,
         callbackProgress: ((progress: Float) -> Unit)? = null,
         callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
-        timeout: Long = TIMEOUT_DOWNLOADING
+        timeoutConnect: Long = TIMEOUT_CONNECT_DOWNLOADING
     ) {
-        val timeoutDownloading = TIMEOUT_DOWNLOADING_MIN.coerceAtLeast(timeout)
+        val timeoutDownloading = TIMEOUT_CONNECT_DOWNLOADING_MIN.coerceAtLeast(timeoutConnect)
         var downloadId = 0
 
         // tạo thời gian kiểm tra timeout
@@ -80,10 +103,9 @@ class GsDownloadManager() {
             }
 
             override fun onTimerFinish() {
-                if (downloadResult.downloadStatus == DownloadStatus.DOWNLOADING) {
-                    return
+                if (downloadResult.downloadStatus == DownloadStatus.CONNECTING) {
+                    cancel(downloadId)
                 }
-                cancel(downloadId)
             }
         }
         timeoutDownloadingHourglass.startTimer()
@@ -101,10 +123,12 @@ class GsDownloadManager() {
             }
             .setOnCancelListener {
                 callbackDownload?.invoke(downloadResult.apply {
-                    downloadStatus = if (downloadResult.downloadStatus == DownloadStatus.DOWNLOADING) {
-                        DownloadStatus.CANCEL
-                    } else {
-                        DownloadStatus.TIMEOUT
+                    when (downloadResult.downloadStatus) {
+                        DownloadStatus.DOWNLOADING -> downloadStatus = DownloadStatus.CANCEL
+                        DownloadStatus.CONNECTING -> downloadStatus = DownloadStatus.TIMEOUT
+                        else -> {
+
+                        }
                     }
                 })
             }
@@ -126,10 +150,16 @@ class GsDownloadManager() {
             })
     }
 
+    /**
+     * Hủy tải theo id
+     */
     fun cancel(downloadId: Int) {
         PRDownloader.cancel(downloadId)
     }
 
+    /**
+     * Hủy tải tất cả
+     */
     fun cancelAll() {
         PRDownloader.cancelAll()
     }
@@ -185,8 +215,8 @@ class GsDownloadManager() {
         @SuppressLint("StaticFieldLeak")
         private var singleton: GsDownloadManager? = null
 
-        const val TIMEOUT_DOWNLOADING = 30_000L
-        const val TIMEOUT_DOWNLOADING_MIN = 15_000L
+        const val TIMEOUT_CONNECT_DOWNLOADING = 30_000L
+        const val TIMEOUT_CONNECT_DOWNLOADING_MIN = 15_000L
 
         /***
          * returns an instance of this class. if singleton is null create an instance

@@ -15,11 +15,31 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                    implementation 'com.github.vtabk2:GsCore:1.0.4'
+                    implementation 'com.github.vtabk2:GsCore:1.0.5'
             }
 ```
 
 # Lịch sử cập nhật
+
+**Version 1.0.5**
+- Thêm [DownloadStatus]() quản lý trạng thái tải
+- Đổi [DownloadResult]() giờ sẽ chứa đường dẫn và trạng thái tải
+- 
+
+```css
+        GsDownloadManager.instance.download(
+            context = context,
+            url = "https://d-03.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjNfZWJkODczZjY?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy4wX0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1532602232310734&is_hot=false&k=4aa66749721463730e40d47c48a0876067fe1c76",
+            dirPath = file.absolutePath,
+            fileName = "Photo Frame - Photo Collage_5.3.0_APKPure.xapk",
+            callbackProgress = { progress ->
+                progressLiveData.postValue(progress.toInt())
+            },
+            callbackDownload = { downloadResult ->
+                downloadStatusLiveData.postValue(downloadResult.downloadStatus)
+            }
+        )
+```
 
 **Version 1.0.4**
 - Thêm [GsDownloadManager](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt)
@@ -48,7 +68,7 @@ quản lý download có thời gian chờ
                 callbackProgress = { progress ->
                     progressLiveData.postValue(progress)
                 },
-                callbackDownload = { path, downloadStatus: DownloadStatus ->
+                callbackDownload = { path, downloadResult: DownloadResult ->
                 }
             )
     }
