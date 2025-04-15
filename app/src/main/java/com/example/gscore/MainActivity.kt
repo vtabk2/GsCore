@@ -1,21 +1,16 @@
 package com.example.gscore
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.lifecycleScope
 import com.core.gscore.utils.download.GsDownloadManager
 import com.core.gscore.utils.extensions.invisible
 import com.core.gscore.utils.extensions.visible
 import com.core.gscore.utils.network.NetworkUtils
 import com.example.gscore.databinding.ActivityMainBinding
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
@@ -34,19 +29,6 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-        lifecycleScope.launch(Dispatchers.IO) {
-            for (i in 0..100) {
-                Log.d("GsDownloadManager", "MainActivity_onCreate: i = $i")
-                NetworkUtils.hasInternetAccessCheck(
-                    doTask = {
-                        Log.d("GsDownloadManager", "MainActivity_onCreate: SUCCESS")
-                    }, doException = { networkError ->
-                        Log.d("GsDownloadManager", "MainActivity_onCreate: networkError = " + networkError.name)
-                    }, context = this@MainActivity, maxRetries = 3, enableDebounce = false
-                )
-                delay(500)
-            }
-        }
 
         GsDownloadManager.instance.register(context = this)
 
@@ -58,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             when (downloadStatus) {
                 GsDownloadManager.DownloadStatus.CONNECTING -> {
                     bindingView.tvRetry.invisible()
-                    bindingView.tvProgress.text = "0%"
+                    bindingView.tvProgress.text = "0 %"
                     bindingView.tvResult.text = "CONNECTING"
                 }
 
@@ -98,6 +80,10 @@ class MainActivity : AppCompatActivity() {
             bindingView.tvRetry.invisible()
             bindingView.tvProgress.visible()
             viewModel.download()
+        }
+
+        bindingView.tvCancel.setOnClickListener {
+            GsDownloadManager.instance.cancelAll()
         }
     }
 

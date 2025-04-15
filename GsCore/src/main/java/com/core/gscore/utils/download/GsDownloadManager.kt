@@ -25,28 +25,35 @@ class GsDownloadManager() {
         dirPath: String,
         fileName: String,
         callbackProgress: ((progress: Float) -> Unit)? = null,
-        callbackDownload: ((path: String, downloadStatus: DownloadStatus) -> Unit)? = null,
+        callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
         timeout: Long = TIMEOUT_DOWNLOADING,
         maxRetries: Int = 3,
         enableDebounce: Boolean = false,
         tag: Any? = null
     ) {
         val path = "$dirPath/$fileName"
-        callbackDownload?.invoke(path, DownloadStatus.CONNECTING)
+        val downloadResult = DownloadResult(
+            path = path,
+            downloadStatus = DownloadStatus.CONNECTING,
+            tag = tag
+        )
+        callbackDownload?.invoke(downloadResult)
+
         NetworkUtils.hasInternetAccessCheck(
             doTask = {
                 downloadWithTimeout(
                     url = url,
                     dirPath = dirPath,
                     fileName = fileName,
+                    downloadResult = downloadResult,
                     callbackProgress = callbackProgress,
                     callbackDownload = callbackDownload,
                     timeout = timeout,
-                    tag = tag
                 )
             },
             doException = { networkError ->
-                callbackDownload?.invoke(path, if (networkError == NetworkUtils.NetworkError.SSL_HANDSHAKE) DownloadStatus.SSL_HANDSHAKE else DownloadStatus.TIMEOUT)
+                downloadResult.downloadStatus = if (networkError == NetworkUtils.NetworkError.SSL_HANDSHAKE) DownloadStatus.SSL_HANDSHAKE else DownloadStatus.TIMEOUT
+                callbackDownload?.invoke(downloadResult)
             },
             context = context,
             maxRetries = maxRetries,
@@ -58,14 +65,12 @@ class GsDownloadManager() {
         url: String,
         dirPath: String,
         fileName: String,
+        downloadResult: DownloadResult,
         callbackProgress: ((progress: Float) -> Unit)? = null,
-        callbackDownload: ((path: String, downloadStatus: DownloadStatus) -> Unit)? = null,
-        timeout: Long = TIMEOUT_DOWNLOADING,
-        tag: Any? = null
-    ): Int {
-        val path = "$dirPath/$fileName"
+        callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
+        timeout: Long = TIMEOUT_DOWNLOADING
+    ) {
         val timeoutDownloading = TIMEOUT_DOWNLOADING_MIN.coerceAtLeast(timeout)
-        var isStartDownload = false
         var downloadId = 0
 
         // tạo thời gian kiểm tra timeout
@@ -75,7 +80,7 @@ class GsDownloadManager() {
             }
 
             override fun onTimerFinish() {
-                if (isStartDownload) {
+                if (downloadResult.downloadStatus == DownloadStatus.DOWNLOADING) {
                     return
                 }
                 cancel(downloadId)
@@ -88,27 +93,37 @@ class GsDownloadManager() {
             .download(url, dirPath, fileName)
             .build()
             .setOnStartOrResumeListener {
-                isStartDownload = true
-                callbackDownload?.invoke(path, DownloadStatus.DOWNLOADING)
+                callbackDownload?.invoke(downloadResult.apply {
+                    downloadStatus = DownloadStatus.DOWNLOADING
+                })
                 // hủy đếm thời gian đi
                 timeoutDownloadingHourglass.stopTimer()
             }
             .setOnCancelListener {
-                callbackDownload?.invoke(path, DownloadStatus.CANCEL)
+                callbackDownload?.invoke(downloadResult.apply {
+                    downloadStatus = if (downloadResult.downloadStatus == DownloadStatus.DOWNLOADING) {
+                        DownloadStatus.CANCEL
+                    } else {
+                        DownloadStatus.TIMEOUT
+                    }
+                })
             }
             .setOnProgressListener { progress ->
                 callbackProgress?.invoke(progress.currentBytes * 100 / progress.totalBytes.toFloat())
             }
             .start(object : OnDownloadListener {
                 override fun onDownloadComplete() {
-                    callbackDownload?.invoke(path, DownloadStatus.SUCCESS)
+                    callbackDownload?.invoke(downloadResult.apply {
+                        downloadStatus = DownloadStatus.SUCCESS
+                    })
                 }
 
                 override fun onError(error: Error?) {
-                    callbackDownload?.invoke(path, if (error?.connectionException is SSLHandshakeException) DownloadStatus.SSL_HANDSHAKE else DownloadStatus.TIMEOUT)
+                    callbackDownload?.invoke(downloadResult.apply {
+                        downloadStatus = if (error?.connectionException is SSLHandshakeException) DownloadStatus.SSL_HANDSHAKE else DownloadStatus.TIMEOUT
+                    })
                 }
             })
-        return downloadId
     }
 
     fun cancel(downloadId: Int) {
@@ -120,13 +135,51 @@ class GsDownloadManager() {
     }
 
     enum class DownloadStatus {
+        /**
+         * Đang ở trạng thái kết nối
+         */
         CONNECTING,
+
+        /**
+         * Đang tải
+         */
         DOWNLOADING,
+
+        /**
+         * Tải thành công
+         */
         SUCCESS,
+
+        /**
+         * Quá thời gian chờ
+         */
         TIMEOUT,
+
+        /**
+         * Hủy tải
+         */
         CANCEL,
+
+        /**
+         * Lỗi SSL Handshake
+         */
         SSL_HANDSHAKE
     }
+
+    class DownloadResult(
+        /**
+         * Đường dẫn của tệp được tải
+         */
+        val path: String,
+        /**
+         * Trạng thái tải
+         */
+        var downloadStatus: DownloadStatus,
+        /**
+         * Ghi chú nếu cần
+         */
+        val tag: Any? = null
+    )
 
     companion object {
         @SuppressLint("StaticFieldLeak")

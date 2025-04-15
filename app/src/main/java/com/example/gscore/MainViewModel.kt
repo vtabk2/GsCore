@@ -33,8 +33,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             callbackProgress = { progress ->
                 progressLiveData.postValue(progress.toInt())
             },
-            callbackDownload = { path, downloadStatus: DownloadStatus ->
-                downloadStatusLiveData.postValue(downloadStatus)
+            callbackDownload = { downloadResult ->
+                downloadStatusLiveData.postValue(downloadResult.downloadStatus)
             }
         )
     }
