@@ -29,6 +29,11 @@ Add it in your root build.gradle at the end of repositories:
 ```css
         val textAsset = context.assets.readTextAsset("fileName")
         val textFromAsset = context.assets.readTextFromAsset("fileName")
+```
+
+- Lấy bitmap từ assets
+
+```css
         val bitmapFromAsset = context.assets.getBitmapFromAsset("fileName")
 ```
 
@@ -212,7 +217,7 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
 
 # Lịch sử cập nhật
 **Version 1.0.7**
-- Thêm extension getBitmapFromAsset, readTextAsset
+- Thêm extension getBitmapFromAsset, getTextFromAsset
 
 ```css
         context.assets.getTextFromAsset("fileName")
