@@ -1,5 +1,7 @@
 # GsCore
 
+Thư viện được tạo ra để chứa các thư viện cần thiết nhất và các phần mở rộng cần thiết nhất của 1 ứng dụng
+
 # Gradle
 
 **Step 1.** Add the JitPack repository to your build file
