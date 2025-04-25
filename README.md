@@ -1,6 +1,7 @@
 # GsCore
 
-**Gradle**
+# Gradle
+
 **Step 1.** Add the JitPack repository to your build file
 Add it in your root build.gradle at the end of repositories:
 ```css
@@ -24,7 +25,7 @@ Add it in your root build.gradle at the end of repositories:
 - Đọc string từ filePath
 
 ```css
-        context.assets.readTextAsset("filePath")
+        val textAsset = context.assets.readTextAsset("filePath")
 ```
 
 # LiveDataNetworkStatus
@@ -49,14 +50,25 @@ Add it in your root build.gradle at the end of repositories:
        val isInternetAvailable = NetworkUtils.isInternetAvailable(context)
 ```
 
-> isInternetAvailable = true -> có bật mạng
+> isInternetAvailable = true -> bật mạng
 
 > isInternetAvailable = false -> tắt mạng
 
 - Kiểm tra kết nối có mạng hay không?
 
 ```css
-        NetworkUtils.hasInternetAccessCheck()
+        NetworkUtils.hasInternetAccessCheck(
+            doTask = {
+                
+            },
+            doException = { networkError ->
+               
+            },
+            context = context,
+            timeout: Int = DEFAULT_TIMEOUT_MS,
+            maxRetries = maxRetries,
+            enableDebounce = enableDebounce
+        )
 ```
 
 - Hủy tất cả kiểm tra kết nối
@@ -121,6 +133,16 @@ Add it in your root build.gradle at the end of repositories:
         GsDownloadManager.instance.cancelAll()
 ```
 
+# LifecycleOwnerExtensions
+
+Kiểm tra lifecycleScope hiện tại trạng thái resume không thì mới thực hiện chức năng (tránh trường hợp bị hủy trước khi vào gây ra crash)
+
+```css
+        launchWhenResumed {
+            // todo
+        }
+```
+
 # Hourglass 
 
 Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm thời gian.
@@ -147,6 +169,36 @@ Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm t
         timerDelay?.resumeTimer()
         timerDelay?.stopTimer()
 ```
+
+# AspectRatioLayout
+
+Thay đổi kích thước
+> widthToHeight dựa vào chiều cao để tính chiều rộng theo
+
+> heightToWidth dựa vào chiều rộng để tính chiều cao theo
+
+```css
+        <com.core.gscore.view.AspectRatioLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/arlRoot"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="5dp"
+            android:layout_marginVertical="5dp"
+            android:background="@drawable/selector_background_item_font"
+            app:heightToWidth="0.25">
+        </com.core.gscore.view.AspectRatioLayout>
+```
+
+- Trong code có thể thay đổi thủ công
+
+```css
+        ratioLayout.widthToHeight = width.toFloat() / height
+```
+
+# PRDownloader
+
+Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
 
 # Lịch sử cập nhật
 **Version 1.0.6**
