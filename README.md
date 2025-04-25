@@ -19,7 +19,58 @@ Add it in your root build.gradle at the end of repositories:
             }
 ```
 
+# AssetManagerExtensions
+
+- Đọc string từ filePath
+
+```css
+        context.assets.readTextAsset("filePath")
+```
+
+# LiveDataNetworkStatus
+
+- Kiểm tra trạng thái thay đổi kết nối mạng (khi tắt, bật mạng)
+
+```css
+        val liveDataNetworkStatus by lazy { LiveDataNetworkStatus(context) }
+        
+        viewModel.liveDataNetworkStatus.observe(this) { connect ->
+            if (connect) {
+                reloadDataAfterConnect()
+            }
+        }
+```
+
+# NetworkUtils
+
+- Kiểm tra có bật kết nối mạng (bật wifi hoặc dùng mạng điện thoại 3G, 4G, 5G...), không kiểm tra được kết nối có mạng hay không!
+
+```css
+       val isInternetAvailable = NetworkUtils.isInternetAvailable(context)
+```
+
+> isInternetAvailable = true -> có bật mạng
+
+> isInternetAvailable = false -> tắt mạng
+
+- Kiểm tra kết nối có mạng hay không?
+
+```css
+        NetworkUtils.hasInternetAccessCheck()
+```
+
+- Hủy tất cả kiểm tra kết nối
+
+```css
+        NetworkUtils.cancelAllRequests()
+```
+
 # Lịch sử cập nhật
+**Version 1.0.6**
+- Thêm extensions readTextAsset chuyên để đọc text từ filePath
+```css
+        context.assets.readTextAsset("filePath")
+```
 
 **Version 1.0.5**
 - Thêm [DownloadStatus](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) quản lý trạng thái tải
