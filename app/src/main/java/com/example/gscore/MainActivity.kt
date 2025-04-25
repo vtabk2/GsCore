@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         bindingView.tvCancel.setOnClickListener {
-            GsDownloadManager.instance.cancelAll()
+           viewModel.cancel()
         }
     }
 

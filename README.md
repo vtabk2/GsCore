@@ -65,6 +65,89 @@ Add it in your root build.gradle at the end of repositories:
         NetworkUtils.cancelAllRequests()
 ```
 
+# GsDownloadManager
+
+Được tạo ra để quản lý việc tải dữ liệu có cấu hình thời gian chờ kết nối tải
+
+- Đăng ký cấu hình PRDownloader (thường khởi tạo ở Application)
+
+```css
+        GsDownloadManager.instance.register(context = this)
+```
+
+- Cấu hình tải dữ liệu
+
+```css
+        val context = getApplication<Application>()
+        val folder = context.getExternalFilesDir("download")
+        folder?.let {
+            if (!it.exists()) {
+                it.mkdirs()
+            }
+        }
+
+        val file = File(folder, "apk")
+        if (!file.exists()) {
+            file.mkdirs()
+        }
+
+        GsDownloadManager.instance.download(
+            context = context,
+            url = "https://d-04.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjhfYTllY2EwZTM?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy41X0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1359001696225752&is_hot=false&k=c5066d6130cee63cb7aad5e0f1197cb5680c4643",
+            dirPath = file.absolutePath,
+            fileName = "Photo Frame - Photo Collage_5.3.5_APKPure.xapk",
+            callbackProgress = { progress ->
+                progressLiveData.postValue(progress.toInt())
+            },
+            callbackDownload = { downloadResult ->
+                downloadStatusLiveData.postValue(downloadResult.downloadStatus)
+            },
+            onDownloadId = { downloadId ->
+                this.downloadId = downloadId
+            },
+            timeoutConnect = 15_000
+        )
+```
+
+- Hủy tải theo id
+
+```css
+        GsDownloadManager.instance.cancel(downloadId)
+```
+
+- Hủy tải tất cả
+
+```css
+        GsDownloadManager.instance.cancelAll()
+```
+
+# Hourglass 
+
+Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm thời gian.
+
+- Khởi tạo
+
+```css
+        timerDelay = object : Hourglass(4000, 500) {
+            override fun onTimerTick(timeRemaining: Long) {
+                // nothing
+            }
+
+            override fun onTimerFinish() {
+                
+            }
+        }
+```
+
+- Phương pháp để quản lý bộ đếm thời gian
+
+```css
+        timerDelay?.startTimer()
+        timerDelay?.pauseTimer()
+        timerDelay?.resumeTimer()
+        timerDelay?.stopTimer()
+```
+
 # Lịch sử cập nhật
 **Version 1.0.6**
 - Thêm extensions readTextAsset chuyên để đọc text từ filePath

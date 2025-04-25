@@ -10,6 +10,7 @@ import java.io.File
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     val progressLiveData = MutableLiveData<Int>()
     val downloadStatusLiveData = MutableLiveData<DownloadStatus>()
+    private var downloadId: Int = 0
 
     fun download() {
         val context = getApplication<Application>()
@@ -27,17 +28,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         GsDownloadManager.instance.download(
             context = context,
-            url = "https://d-03.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjNfZWJkODczZjY?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy4wX0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1532602232310734&is_hot=false&k=4aa66749721463730e40d47c48a0876067fe1c76",
+            url = "https://d-04.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjhfYTllY2EwZTM?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy41X0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1359001696225752&is_hot=false&k=c5066d6130cee63cb7aad5e0f1197cb5680c4643",
             dirPath = file.absolutePath,
-            fileName = "Photo Frame - Photo Collage_5.3.0_APKPure.xapk",
+            fileName = "Photo Frame - Photo Collage_5.3.5_APKPure.xapk",
             callbackProgress = { progress ->
                 progressLiveData.postValue(progress.toInt())
             },
             callbackDownload = { downloadResult ->
                 downloadStatusLiveData.postValue(downloadResult.downloadStatus)
             },
+            onDownloadId = { downloadId ->
+                this.downloadId = downloadId
+            },
             timeoutConnect = 15_000
         )
+    }
+
+    fun cancel() {
+        GsDownloadManager.instance.cancel(downloadId)
     }
 
     override fun onCleared() {

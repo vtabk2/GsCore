@@ -28,6 +28,7 @@ class GsDownloadManager() {
      * @param fileName tên của tệp
      * @param callbackProgress chạy % khi tải
      * @param callbackDownload trả về trạng thái tải
+     * @param onDownloadId trả về downloadId để dùng hủy tải dữ liệu khi cần
      * @param timeoutConnect thời gian chờ kết nối để tải tính bằng milliseconds
      * @param maxRetries số lần thử lại tối đa khi kiểm tra kết nối mạng
      * @param enableDebounce có kiểm tra chặn kiểm tra mạng liên tục không
@@ -40,6 +41,7 @@ class GsDownloadManager() {
         fileName: String,
         callbackProgress: ((progress: Float) -> Unit)? = null,
         callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
+        onDownloadId: (Int) -> Unit,
         timeoutConnect: Long = TIMEOUT_CONNECT_DOWNLOADING_DEFAULT,
         maxRetries: Int = 3,
         enableDebounce: Boolean = false,
@@ -57,7 +59,7 @@ class GsDownloadManager() {
 
         NetworkUtils.hasInternetAccessCheck(
             doTask = {
-                downloadWithTimeout(
+                val downloadId = downloadWithTimeout(
                     url = url,
                     dirPath = dirPath,
                     fileName = fileName,
@@ -66,6 +68,7 @@ class GsDownloadManager() {
                     callbackDownload = callbackDownload,
                     timeoutConnect = timeoutConnect,
                 )
+                onDownloadId(downloadId)
             },
             doException = { networkError ->
                 downloadResult.downloadStatus = if (networkError == NetworkUtils.NetworkError.SSL_HANDSHAKE) DownloadStatus.SSL_HANDSHAKE else DownloadStatus.TIMEOUT
@@ -94,7 +97,7 @@ class GsDownloadManager() {
         callbackProgress: ((progress: Float) -> Unit)? = null,
         callbackDownload: ((downloadResult: DownloadResult) -> Unit)? = null,
         timeoutConnect: Long
-    ) {
+    ): Int {
         val timeoutDownloading = TIMEOUT_CONNECT_DOWNLOADING_MIN.coerceAtLeast(timeoutConnect)
         var downloadId = 0
 
@@ -157,6 +160,7 @@ class GsDownloadManager() {
                     })
                 }
             })
+        return downloadId
     }
 
     /**
