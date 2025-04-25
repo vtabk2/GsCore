@@ -18,16 +18,18 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                implementation 'com.github.vtabk2:GsCore:1.0.6'
+                implementation 'com.github.vtabk2:GsCore:1.0.7'
             }
 ```
 
 # [AssetManagerExtensions](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/extensions/AssetManagerExtensions.kt)
 
-- Đọc string từ filePath
+- Đọc string từ fileName
 
 ```css
-        val textAsset = context.assets.readTextAsset("filePath")
+        val textAsset = context.assets.readTextAsset("fileName")
+        val textFromAsset = context.assets.readTextFromAsset("fileName")
+        val bitmapFromAsset = context.assets.getBitmapFromAsset("fileName")
 ```
 
 # [LiveDataNetworkStatus](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/network/LiveDataNetworkStatus.kt)
@@ -209,10 +211,17 @@ Thay đổi kích thước
 Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
 
 # Lịch sử cập nhật
-**Version 1.0.6**
-- Thêm extensions readTextAsset chuyên để đọc text từ filePath
+**Version 1.0.7**
+- Thêm extension getBitmapFromAsset, readTextAsset
+
 ```css
-        context.assets.readTextAsset("filePath")
+        context.assets.getTextFromAsset("fileName")
+        context.assets.getBitmapFromAsset("fileName")
+```
+**Version 1.0.6**
+- Thêm extensions readTextAsset chuyên để đọc text từ fileName
+```css
+        context.assets.readTextAsset("fileName")
 ```
 
 - Sửa lại GsDownloadManager để có thể trả ra downloadId
