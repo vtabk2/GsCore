@@ -186,9 +186,24 @@ object NetworkUtils {
     }
 
     enum class NetworkError {
+        /**
+         * Tắt mạng
+         */
         TURN_OFF,
+
+        /**
+         * Có bật mạng nhưng kết nối không ổn định quá thời gian chờ
+         */
         TIMEOUT,
+
+        /**
+         * Có bật mạng nhưng kết nối bị lỗi SSL_HANDSHAKE
+         */
         SSL_HANDSHAKE,
+
+        /**
+         * Có bật mạng và kết nối mạng ổn định
+         */
         SUCCESS
     }
 }

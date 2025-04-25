@@ -18,11 +18,11 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                    implementation 'com.github.vtabk2:GsCore:1.0.5'
+                implementation 'com.github.vtabk2:GsCore:1.0.6'
             }
 ```
 
-# AssetManagerExtensions
+# [AssetManagerExtensions](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/extensions/AssetManagerExtensions.kt)
 
 - Đọc string từ filePath
 
@@ -30,7 +30,7 @@ Add it in your root build.gradle at the end of repositories:
         val textAsset = context.assets.readTextAsset("filePath")
 ```
 
-# LiveDataNetworkStatus
+# [LiveDataNetworkStatus](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/network/LiveDataNetworkStatus.kt)
 
 - Kiểm tra trạng thái thay đổi kết nối mạng (khi tắt, bật mạng)
 
@@ -44,7 +44,7 @@ Add it in your root build.gradle at the end of repositories:
         }
 ```
 
-# NetworkUtils
+# [NetworkUtils](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/network/NetworkUtils.kt)
 
 - Kiểm tra có bật kết nối mạng (bật wifi hoặc dùng mạng điện thoại 3G, 4G, 5G...), không kiểm tra được kết nối có mạng hay không!
 
@@ -52,11 +52,11 @@ Add it in your root build.gradle at the end of repositories:
        val isInternetAvailable = NetworkUtils.isInternetAvailable(context)
 ```
 
-> isInternetAvailable = true -> bật mạng
+> isInternetAvailable = true  -> bật mạng
 
 > isInternetAvailable = false -> tắt mạng
 
-- Kiểm tra kết nối có mạng hay không?
+- Kiểm tra kết nối có mạng hay không gồm kiểm tra bật tắt mạng và kiểm tra thử xem có mạng hay không bằng cách ping thử
 
 ```css
         NetworkUtils.hasInternetAccessCheck(
@@ -67,11 +67,14 @@ Add it in your root build.gradle at the end of repositories:
                
             },
             context = context,
-            timeout: Int = DEFAULT_TIMEOUT_MS,
+            timeout = DEFAULT_TIMEOUT_MS,
             maxRetries = maxRetries,
             enableDebounce = enableDebounce
         )
 ```
+> maxRetries số lần thử lại (mặc định là 1)
+
+> enableDebounce có kiểm tra liên tiếp không (tránh trường hợp gọi liên tục không có thời giữa các lần gọi)
 
 - Hủy tất cả kiểm tra kết nối
 
@@ -92,35 +95,37 @@ Add it in your root build.gradle at the end of repositories:
 - Cấu hình tải dữ liệu
 
 ```css
-        val context = getApplication<Application>()
-        val folder = context.getExternalFilesDir("download")
-        folder?.let {
-            if (!it.exists()) {
-                it.mkdirs()
+        fun download() {
+            val context = getApplication<Application>()
+            val folder = context.getExternalFilesDir("download")
+            folder?.let {
+                if (!it.exists()) {
+                    it.mkdirs()
+                }
             }
+    
+            val file = File(folder, "apk")
+            if (!file.exists()) {
+                file.mkdirs()
+            }
+    
+            GsDownloadManager.instance.download(
+                context = context,
+                url = "https://d-04.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjhfYTllY2EwZTM?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy41X0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1359001696225752&is_hot=false&k=c5066d6130cee63cb7aad5e0f1197cb5680c4643",
+                dirPath = file.absolutePath,
+                fileName = "Photo Frame - Photo Collage_5.3.5_APKPure.xapk",
+                callbackProgress = { progress ->
+                    progressLiveData.postValue(progress.toInt())
+                },
+                callbackDownload = { downloadResult ->
+                    downloadStatusLiveData.postValue(downloadResult.downloadStatus)
+                },
+                onDownloadId = { downloadId ->
+                    this.downloadId = downloadId
+                },
+                timeoutConnect = 15_000
+            )
         }
-
-        val file = File(folder, "apk")
-        if (!file.exists()) {
-            file.mkdirs()
-        }
-
-        GsDownloadManager.instance.download(
-            context = context,
-            url = "https://d-04.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjhfYTllY2EwZTM?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy41X0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1359001696225752&is_hot=false&k=c5066d6130cee63cb7aad5e0f1197cb5680c4643",
-            dirPath = file.absolutePath,
-            fileName = "Photo Frame - Photo Collage_5.3.5_APKPure.xapk",
-            callbackProgress = { progress ->
-                progressLiveData.postValue(progress.toInt())
-            },
-            callbackDownload = { downloadResult ->
-                downloadStatusLiveData.postValue(downloadResult.downloadStatus)
-            },
-            onDownloadId = { downloadId ->
-                this.downloadId = downloadId
-            },
-            timeoutConnect = 15_000
-        )
 ```
 
 - Hủy tải theo id
@@ -135,7 +140,7 @@ Add it in your root build.gradle at the end of repositories:
         GsDownloadManager.instance.cancelAll()
 ```
 
-# LifecycleOwnerExtensions
+# [LifecycleOwnerExtensions](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/extensions/AssetManagerExtensions.kt)
 
 Kiểm tra lifecycleScope hiện tại trạng thái resume không thì mới thực hiện chức năng (tránh trường hợp bị hủy trước khi vào gây ra crash)
 
@@ -175,6 +180,7 @@ Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm t
 # AspectRatioLayout
 
 Thay đổi kích thước
+
 > widthToHeight dựa vào chiều cao để tính chiều rộng theo
 
 > heightToWidth dựa vào chiều rộng để tính chiều cao theo
