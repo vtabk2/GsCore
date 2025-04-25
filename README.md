@@ -223,6 +223,10 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
         context.assets.getTextFromAsset("fileName")
         context.assets.getBitmapFromAsset("fileName")
 ```
+
+<details>
+  <summary>👉 Click để xem lịch sử</summary>
+
 **Version 1.0.6**
 - Thêm extensions readTextAsset chuyên để đọc text từ fileName
 ```css
@@ -253,7 +257,7 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
 
 **Version 1.0.4**
 - Thêm [GsDownloadManager](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt)
-quản lý download có thời gian chờ
+  quản lý download có thời gian chờ
 
 ```css
         fun download() {
@@ -310,3 +314,5 @@ quản lý download có thời gian chờ
             }
         }
 ```
+
+</details>
