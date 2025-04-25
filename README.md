@@ -225,7 +225,7 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
 ```
 
 <details>
-  <summary>👉 Click để xem lịch sử</summary>
+  <summary>👉 Click để xem thêm lịch sử cập nhật</summary>
 
 **Version 1.0.6**
 - Thêm extensions readTextAsset chuyên để đọc text từ fileName
