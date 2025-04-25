@@ -215,6 +215,8 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
         context.assets.readTextAsset("filePath")
 ```
 
+- Sửa lại GsDownloadManager để có thể trả ra downloadId
+
 **Version 1.0.5**
 - Thêm [DownloadStatus](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) quản lý trạng thái tải
 - Đổi [DownloadResult](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) giờ sẽ chứa đường dẫn và trạng thái tải
