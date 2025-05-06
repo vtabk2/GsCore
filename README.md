@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                implementation 'com.github.vtabk2:GsCore:1.0.7'
+                implementation 'com.github.vtabk2:GsCore:1.0.8'
             }
 ```
 
@@ -216,8 +216,13 @@ Thay đổi kích thước
 Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
 
 # Lịch sử cập nhật
+
+**Version 1.0.8**
+
+- Cải tiến `getBitmapFromAsset` để hạn chế tràn bộ nhớ và có thể dựa vào kích thước ảnh cần lấy ra
+
 **Version 1.0.7**
-- Thêm extension getBitmapFromAsset, getTextFromAsset
+- Thêm extension `getBitmapFromAsset`, `getTextFromAsset`
 
 ```css
         context.assets.getTextFromAsset("fileName")
