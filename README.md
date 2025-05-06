@@ -188,9 +188,9 @@ Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm t
 
 Thay đổi kích thước
 
-> widthToHeight dựa vào chiều cao để tính chiều rộng theo
+- `widthToHeight` dựa vào chiều cao để tính chiều rộng theo
 
-> heightToWidth dựa vào chiều rộng để tính chiều cao theo
+- `heightToWidth` dựa vào chiều rộng để tính chiều cao theo
 
 ```css
         <com.core.gscore.view.AspectRatioLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -221,6 +221,9 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
 
 - Cải tiến `getBitmapFromAsset` để hạn chế tràn bộ nhớ và có thể dựa vào kích thước ảnh cần lấy ra
 
+<details>
+  <summary>👉 Click để xem thêm lịch sử cập nhật</summary>
+
 **Version 1.0.7**
 - Thêm extension `getBitmapFromAsset`, `getTextFromAsset`
 
@@ -228,9 +231,6 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
         context.assets.getTextFromAsset("fileName")
         context.assets.getBitmapFromAsset("fileName")
 ```
-
-<details>
-  <summary>👉 Click để xem thêm lịch sử cập nhật</summary>
 
 **Version 1.0.6**
 - Thêm extensions readTextAsset chuyên để đọc text từ fileName
