@@ -27,8 +27,7 @@ Add it in your root build.gradle at the end of repositories:
 - Đọc string từ fileName
 
 ```css
-        val textAsset = context.assets.readTextAsset("fileName")
-        val textFromAsset = context.assets.readTextFromAsset("fileName")
+        val textFromAsset = context.assets.getTextFromAsset("fileName")
 ```
 
 - Lấy bitmap từ assets
