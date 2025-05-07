@@ -26,26 +26,30 @@ fun AssetManager.getBitmapFromAsset(
     inPreferredConfig: Bitmap.Config = Bitmap.Config.ARGB_8888
 ): Bitmap? {
     return try {
+        // Bước 1: Đọc thông tin kích thước với inJustDecodeBounds = true
+        val options = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+
+        // Mở stream lần 1 chỉ để đọc metadata
+        open(fileName).use { inputStream ->
+            BitmapFactory.decodeStream(inputStream, null, options)
+        }
+
+        // Tính toán inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
+        options.inJustDecodeBounds = false
+        options.inPreferredConfig = inPreferredConfig
+
         // Open the asset as an InputStream
         open(fileName).use { inputStream ->
-            // Bước 1: Đọc kích thước gốc và tính inSampleSize
-            val options = BitmapFactory.Options().apply {
-                inJustDecodeBounds = true
-            }
-            BitmapFactory.decodeStream(inputStream, null, options)
-            options.inSampleSize = calculateInSampleSize(options, targetWidth, targetHeight)
-            options.inJustDecodeBounds = false
-            options.inPreferredConfig = inPreferredConfig
-
-            // Bước 2: Decode với inSampleSize
-            val bitmap = BitmapFactory.decodeStream(inputStream, null, options) ?: return null
-
-            // Bước 3: Scale (nếu cần)
-            when {
-                targetWidth != null && targetHeight != null -> scaleBitmap(bitmap, targetWidth, targetHeight)
-                targetWidth != null -> scaleToWidth(bitmap, targetWidth)
-                targetHeight != null -> scaleToHeight(bitmap, targetHeight)
-                else -> bitmap
+            BitmapFactory.decodeStream(inputStream, null, options)?.let { bitmap ->
+                when {
+                    targetWidth != null && targetHeight != null -> scaleBitmap(bitmap, targetWidth, targetHeight)
+                    targetWidth != null -> scaleToWidth(bitmap, targetWidth)
+                    targetHeight != null -> scaleToHeight(bitmap, targetHeight)
+                    else -> bitmap
+                }
             }
         }
     } catch (e: IOException) {
