@@ -88,7 +88,7 @@ Add it in your root build.gradle at the end of repositories:
         NetworkUtils.cancelAllRequests()
 ```
 
-# GsDownloadManager
+# [GsDownloadManager](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt)
 
 Được tạo ra để quản lý việc tải dữ liệu có cấu hình thời gian chờ kết nối tải
 
@@ -156,7 +156,7 @@ Kiểm tra lifecycleScope hiện tại trạng thái resume không thì mới th
         }
 ```
 
-# Hourglass 
+# [Hourglass](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/hourglass/Hourglass.java) 
 
 Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm thời gian.
 
@@ -183,7 +183,7 @@ Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm t
         timerDelay?.stopTimer()
 ```
 
-# AspectRatioLayout
+# [AspectRatioLayout](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/view/AspectRatioLayout.kt)
 
 Thay đổi kích thước
 
@@ -210,7 +210,7 @@ Thay đổi kích thước
         ratioLayout.widthToHeight = width.toFloat() / height
 ```
 
-# PRDownloader
+# [PRDownloader](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/downloader/PRDownloader.java)
 
 Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
 
