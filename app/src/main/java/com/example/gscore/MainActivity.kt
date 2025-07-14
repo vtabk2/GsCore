@@ -76,6 +76,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        bindingView.rivRetry.setOnClickListener {
+            bindingView.tvRetry.invisible()
+            bindingView.tvProgress.visible()
+            viewModel.download()
+        }
+
         bindingView.tvRetry.setOnClickListener {
             bindingView.tvRetry.invisible()
             bindingView.tvProgress.visible()
