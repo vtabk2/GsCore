@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                implementation 'com.github.vtabk2:GsCore:1.0.9'
+                implementation 'com.github.vtabk2:GsCore:1.0.10'
             }
 ```
 
@@ -212,9 +212,43 @@ Thay đổi kích thước
 
 # [PRDownloader](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/downloader/PRDownloader.java)
 
+# [RippleImageView](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/view/RippleImageView.kt)
+
+- Đổi icon `riv_icon_ripple`
+- Đổi padding ripple `riv_padding_ripple`
+
+ ```css
+        <com.core.gscore.view.RippleImageView
+            android:id="@+id/rivRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@id/tvRetry"
+            app:layout_constraintEnd_toEndOf="@id/tvRetry"
+            app:layout_constraintStart_toStartOf="@id/tvRetry"
+            app:riv_icon_ripple="@drawable/ic_retry"/>
+  ```
+
 Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
 
 # Lịch sử cập nhật
+
+**Version 1.0.10**
+
+- Thêm `RippleImageView`
+
+  ```css
+        <com.core.gscore.view.RippleImageView
+            android:id="@+id/rivRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            app:layout_constraintBottom_toTopOf="@id/tvRetry"
+            app:layout_constraintEnd_toEndOf="@id/tvRetry"
+            app:layout_constraintStart_toStartOf="@id/tvRetry"
+            app:riv_icon_ripple="@drawable/ic_retry"/>
+  ```
+
 **Version 1.0.9**
 - Sửa lỗi `getBitmapFromAsset` không tải được ảnh
 
