@@ -137,17 +137,42 @@ fun View.onGlobalLayout(callback: () -> Unit) {
     })
 }
 
-const val THRESHOLD_CLICK_TIME = 800
-var lastClick = 0L
+private const val THRESHOLD_CLICK_TIME = 600L
+private val lastClickMap = mutableMapOf<Int, Long>()
+private var lastCleanupTime = 0L
+private const val CLEANUP_INTERVAL = 5000L
 
-fun View.setClickSafeAll(listener: View.OnClickListener?) {
-    setOnClickListener(object : View.OnClickListener {
-        override fun onClick(v: View) {
-            if (System.currentTimeMillis() - lastClick < THRESHOLD_CLICK_TIME) {
-                return
-            }
-            lastClick = System.currentTimeMillis()
-            listener?.onClick(v)
+fun View.setClickSafeAll(action: (v: View) -> Unit) {
+    setOnClickListener { view ->
+        val currentTime = System.currentTimeMillis()
+        val viewId = view.id
+
+        // Kiểm tra thời gian click trước đó
+        val lastClick = lastClickMap[viewId] ?: 0L
+        if (currentTime - lastClick <= THRESHOLD_CLICK_TIME) {
+            return@setOnClickListener
         }
-    })
+
+        // Cập nhật thời gian click mới
+        lastClickMap[viewId] = currentTime
+
+        // Thực hiện action
+        action(view)
+
+        // Dọn dẹp định kỳ (không chạy mỗi lần click)
+        if (currentTime - lastCleanupTime > CLEANUP_INTERVAL) {
+            lastCleanupTime = currentTime
+            cleanupOldEntries(currentTime)
+        }
+    }
+}
+
+private fun cleanupOldEntries(currentTime: Long) {
+    val iterator = lastClickMap.iterator()
+    while (iterator.hasNext()) {
+        val entry = iterator.next()
+        if (currentTime - entry.value > THRESHOLD_CLICK_TIME * 2) {
+            iterator.remove()
+        }
+    }
 }
