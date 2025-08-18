@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                implementation 'com.github.vtabk2:GsCore:1.0.10'
+                implementation 'com.github.vtabk2:GsCore:1.0.11'
             }
 ```
 
@@ -232,6 +232,10 @@ Thay đổi kích thước
 Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
 
 # Lịch sử cập nhật
+
+**Version 1.0.11**
+
+- Cập nhật `setClickSafeAll`
 
 **Version 1.0.10**
 
