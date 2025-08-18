@@ -4,4 +4,9 @@
         <attr name="widthToHeight" format="float"/>
         <attr name="heightToWidth" format="float"/>
     </declare-styleable>
+
+    <declare-styleable name="RippleImageView">
+        <attr name="riv_padding_ripple" format="dimension"/>
+        <attr name="riv_icon_ripple" format="reference"/>
+    </declare-styleable>
 </resources>
