@@ -8,7 +8,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.core.gscore.utils.download.GsDownloadManager
 import com.core.gscore.utils.extensions.invisible
-import com.core.gscore.utils.extensions.setClickSafeAll
+import com.core.gscore.utils.extensions.setOnSingleClick
 import com.core.gscore.utils.extensions.visible
 import com.core.gscore.utils.network.NetworkUtils
 import com.example.gscore.databinding.ActivityMainBinding
@@ -77,19 +77,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        bindingView.rivRetry.setClickSafeAll {
+        bindingView.rivRetry.setOnSingleClick {
             bindingView.tvRetry.invisible()
             bindingView.tvProgress.visible()
             viewModel.download()
         }
 
-        bindingView.tvRetry.setClickSafeAll {
+        bindingView.tvRetry.setOnSingleClick {
             bindingView.tvRetry.invisible()
             bindingView.tvProgress.visible()
             viewModel.download()
         }
 
-        bindingView.tvCancel.setClickSafeAll {
+        bindingView.tvCancel.setOnSingleClick {
            viewModel.cancel()
         }
     }

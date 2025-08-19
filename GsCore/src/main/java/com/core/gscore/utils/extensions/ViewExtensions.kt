@@ -2,6 +2,8 @@ package com.core.gscore.utils.extensions
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.os.Handler
+import android.os.Looper
 import android.view.Gravity
 import android.view.View
 import android.view.ViewAnimationUtils
@@ -12,6 +14,7 @@ import android.view.animation.Animation.AnimationListener
 import android.view.animation.TranslateAnimation
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
+import com.core.gscore.utils.control.OnSingleClick
 import kotlin.math.hypot
 
 fun View.invisibleIf(invisible: Boolean) = if (invisible) invisible() else visible()
@@ -137,42 +140,30 @@ fun View.onGlobalLayout(callback: () -> Unit) {
     })
 }
 
-private const val THRESHOLD_CLICK_TIME = 600L
-private val lastClickMap = mutableMapOf<Int, Long>()
-private var lastCleanupTime = 0L
-private const val CLEANUP_INTERVAL = 5000L
-
-fun View.setClickSafeAll(action: (v: View) -> Unit) {
-    setOnClickListener { view ->
-        val currentTime = System.currentTimeMillis()
-        val viewId = view.id
-
-        // Kiểm tra thời gian click trước đó
-        val lastClick = lastClickMap[viewId] ?: 0L
-        if (currentTime - lastClick <= THRESHOLD_CLICK_TIME) {
-            return@setOnClickListener
-        }
-
-        // Cập nhật thời gian click mới
-        lastClickMap[viewId] = currentTime
-
-        // Thực hiện action
-        action(view)
-
-        // Dọn dẹp định kỳ (không chạy mỗi lần click)
-        if (currentTime - lastCleanupTime > CLEANUP_INTERVAL) {
-            lastCleanupTime = currentTime
-            cleanupOldEntries(currentTime)
-        }
-    }
+fun postDelay(timeMillisecond: Long, runnable: Runnable) {
+    Handler(Looper.getMainLooper()).postDelayed(runnable, timeMillisecond)
 }
 
-private fun cleanupOldEntries(currentTime: Long) {
-    val iterator = lastClickMap.iterator()
-    while (iterator.hasNext()) {
-        val entry = iterator.next()
-        if (currentTime - entry.value > THRESHOLD_CLICK_TIME * 2) {
-            iterator.remove()
+fun View.setOnSingleClick(onClick: (View) -> Unit) {
+    this.setOnClickListener(object : OnSingleClick() {
+        override fun onSingleClick(view: View) {
+            onClick.invoke(view)
         }
-    }
+    })
+}
+
+fun View.setOnSingleClick(timeDelay: Long = 500, onClick: (View) -> Unit) {
+    this.setOnClickListener(object : OnSingleClick(timeDelay = timeDelay) {
+        override fun onSingleClick(view: View) {
+            onClick.invoke(view)
+        }
+    })
+}
+
+fun View.setOnSingleClick(onClick: View.OnClickListener) {
+    this.setOnClickListener(object : OnSingleClick() {
+        override fun onSingleClick(view: View) {
+            onClick.onClick(view)
+        }
+    })
 }
