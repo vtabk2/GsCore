@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                implementation 'com.github.vtabk2:GsCore:1.0.11'
+                implementation 'com.github.vtabk2:GsCore:1.1.0'
             }
 ```
 
@@ -233,6 +233,14 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
 
 # Lịch sử cập nhật
 
+**Version 1.1.0**
+
+- Thêm `setOnSingleClick`
+- Bỏ `setClickSafeAll`
+
+<details>
+  <summary>👉 Click để xem thêm lịch sử cập nhật</summary>
+
 **Version 1.0.11**
 
 - Cập nhật `setClickSafeAll`
@@ -259,9 +267,6 @@ Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thư
 **Version 1.0.8**
 
 - Cải tiến `getBitmapFromAsset` để hạn chế tràn bộ nhớ và có thể dựa vào kích thước ảnh cần lấy ra
-
-<details>
-  <summary>👉 Click để xem thêm lịch sử cập nhật</summary>
 
 **Version 1.0.7**
 - Thêm extension `getBitmapFromAsset`, `getTextFromAsset`
