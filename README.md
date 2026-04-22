@@ -18,7 +18,7 @@ Add it in your root build.gradle at the end of repositories:
 **Step 2.** Add the dependency
 ```css
         dependencies {
-                implementation 'com.github.vtabk2:GsCore:1.1.0'
+                implementation 'com.github.vtabk2:GsCore-lite:1.1.0'
             }
 ```
 
@@ -146,16 +146,6 @@ Add it in your root build.gradle at the end of repositories:
         GsDownloadManager.instance.cancelAll()
 ```
 
-# [LifecycleOwnerExtensions](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/extensions/AssetManagerExtensions.kt)
-
-Kiểm tra lifecycleScope hiện tại trạng thái resume không thì mới thực hiện chức năng (tránh trường hợp bị hủy trước khi vào gây ra crash)
-
-```css
-        launchWhenResumed {
-            // todo
-        }
-```
-
 # [Hourglass](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/hourglass/Hourglass.java) 
 
 Hourglass dùng để đếm ngược có tính năng tạm dừng bộ đếm thời gian.
@@ -212,156 +202,4 @@ Thay đổi kích thước
 
 # [PRDownloader](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/downloader/PRDownloader.java)
 
-# [RippleImageView](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/view/RippleImageView.kt)
-
-- Đổi icon `riv_icon_ripple`
-- Đổi padding ripple `riv_padding_ripple`
-
- ```css
-        <com.core.gscore.view.RippleImageView
-            android:id="@+id/rivRetry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@id/tvRetry"
-            app:layout_constraintEnd_toEndOf="@id/tvRetry"
-            app:layout_constraintStart_toStartOf="@id/tvRetry"
-            app:riv_icon_ripple="@drawable/ic_retry"/>
-  ```
-
 Tích hợp sẵn thư viện PRDownloader vào sẵn và muốn dùng thì thường dùng qua GsDownloadManager
-
-# Lịch sử cập nhật
-
-**Version 1.1.0**
-
-- Thêm `setOnSingleClick`
-- Bỏ `setClickSafeAll`
-
-<details>
-  <summary>👉 Click để xem thêm lịch sử cập nhật</summary>
-
-**Version 1.0.11**
-
-- Cập nhật `setClickSafeAll`
-
-**Version 1.0.10**
-
-- Thêm `RippleImageView`
-
-  ```css
-        <com.core.gscore.view.RippleImageView
-            android:id="@+id/rivRetry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            app:layout_constraintBottom_toTopOf="@id/tvRetry"
-            app:layout_constraintEnd_toEndOf="@id/tvRetry"
-            app:layout_constraintStart_toStartOf="@id/tvRetry"
-            app:riv_icon_ripple="@drawable/ic_retry"/>
-  ```
-
-**Version 1.0.9**
-- Sửa lỗi `getBitmapFromAsset` không tải được ảnh
-
-**Version 1.0.8**
-
-- Cải tiến `getBitmapFromAsset` để hạn chế tràn bộ nhớ và có thể dựa vào kích thước ảnh cần lấy ra
-
-**Version 1.0.7**
-- Thêm extension `getBitmapFromAsset`, `getTextFromAsset`
-
-```css
-        context.assets.getTextFromAsset("fileName")
-        context.assets.getBitmapFromAsset("fileName")
-```
-
-**Version 1.0.6**
-- Thêm extensions readTextAsset chuyên để đọc text từ fileName
-```css
-        context.assets.readTextAsset("fileName")
-```
-
-- Sửa lại GsDownloadManager để có thể trả ra downloadId
-
-**Version 1.0.5**
-- Thêm [DownloadStatus](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) quản lý trạng thái tải
-- Đổi [DownloadResult](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) giờ sẽ chứa đường dẫn và trạng thái tải
-- Sửa lại [GsDownloadManager](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt) để trạng thái tải về chuẩn hơn
-
-```css
-        GsDownloadManager.instance.download(
-            context = context,
-            url = "https://d-03.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjNfZWJkODczZjY?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy4wX0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1532602232310734&is_hot=false&k=4aa66749721463730e40d47c48a0876067fe1c76",
-            dirPath = file.absolutePath,
-            fileName = "Photo Frame - Photo Collage_5.3.0_APKPure.xapk",
-            callbackProgress = { progress ->
-                progressLiveData.postValue(progress.toInt())
-            },
-            callbackDownload = { downloadResult ->
-                downloadStatusLiveData.postValue(downloadResult.downloadStatus)
-            }
-        )
-```
-
-**Version 1.0.4**
-- Thêm [GsDownloadManager](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/download/GsDownloadManager.kt)
-  quản lý download có thời gian chờ
-
-```css
-        fun download() {
-            val context = getApplication<Application>()
-            val folder = context.getExternalFilesDir("download")
-            folder?.let {
-                if (!it.exists()) {
-                    it.mkdirs()
-                }
-            }
-    
-            val file = File(folder, "apk")
-            if (!file.exists()) {
-                file.mkdirs()
-            }
-    
-            GsDownloadManager.instance.download(
-                context = context,
-                url = "https://d-03.winudf.com/b/XAPK/Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZV8yMjNfZWJkODczZjY?_fn=UGhvdG8gRnJhbWUgLSBQaG90byBDb2xsYWdlXzUuMy4wX0FQS1B1cmUueGFwaw&_p=Y29tLmhpZ2hzZWN1cmUucGhvdG9mcmFtZQ%3D%3D&download_id=1532602232310734&is_hot=false&k=4aa66749721463730e40d47c48a0876067fe1c76",
-                dirPath = file.absolutePath,
-                fileName = "Photo Frame - Photo Collage_5.3.0_APKPure.xapk",
-                callbackProgress = { progress ->
-                    progressLiveData.postValue(progress)
-                },
-                callbackDownload = { path, downloadResult: DownloadResult ->
-                }
-            )
-    }
-```
-
-- Đẩy PRDownloader vào GsCore
-
-**Version 1.0.3**
-
-- Thêm [Hourglass](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/hourglass/Hourglass.java)
-- Sửa lại NetworkUtils
-- Thêm check lại ở hàm hasInternetAccessCheck()
-- Thêm maxRetries giới hạn số lần thử lại
-- Thêm enableDebounce kích hoạt chặn gọi liên tục
-- Thêm cancelAllRequests hủy tất cả(khi activity destroy)
-
-```css
-        lifecycleScope.launch(Dispatchers.IO) {
-            for (i in 0..100) {
-                Log.d("GsDownloadManager", "MainActivity_onCreate: i = $i")
-                NetworkUtils.hasInternetAccessCheck(
-                    doTask = {
-                        Log.d("GsDownloadManager", "MainActivity_onCreate: SUCCESS")
-                    }, doException = { networkError ->
-                        Log.d("GsDownloadManager", "MainActivity_onCreate: networkError = " + networkError.name)
-                    }, context = this@MainActivity, maxRetries = 3
-                )
-                delay(500)
-            }
-        }
-```
-
-</details>
