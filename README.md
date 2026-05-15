@@ -22,6 +22,12 @@ Add it in your root build.gradle at the end of repositories:
             }
 ```
 
+```css
+        dependencies {
+                implementation 'com.github.vtabk2:GsCore:lite.1.1.1'
+            }
+```
+
 # [AssetManagerExtensions](https://github.com/vtabk2/GsCore/blob/main/GsCore/src/main/java/com/core/gscore/utils/extensions/AssetManagerExtensions.kt)
 
 - Đọc string từ fileName
