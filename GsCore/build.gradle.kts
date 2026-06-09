@@ -6,10 +6,10 @@ plugins {
 
 android {
     namespace = "com.core.gscore"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
     }
 
     buildTypes {
